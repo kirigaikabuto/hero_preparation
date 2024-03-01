@@ -1,0 +1,2 @@
+docker build -t ex1-app .
+docker run -name=go-web-app -p 80:8080
