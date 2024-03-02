@@ -2,9 +2,15 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kirigaikabuto/hero_preparation/projects/project1/pkg/service"
 )
 
 type Handler struct {
+	services *service.Service
+}
+
+func NewHandler(services *service.Service) Handler {
+	return Handler{services: services}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -23,7 +29,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			catalog.GET("/:id", h.getCatalogById)
 			catalog.PUT("/:id", h.updateCatalog)
 			catalog.DELETE("/:id", h.deleteCatalog)
-			bookCatalog := catalog.Group("/:id/books")
+			bookCatalog := catalog.Group(":id/books")
 			{
 				bookCatalog.POST("/", h.createBookCatalog)
 				bookCatalog.GET("/", h.listBookCatalog)
