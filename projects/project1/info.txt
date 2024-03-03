@@ -1,5 +1,9 @@
 docker pull postgres
 docker run --name=project1-db -e POSTGRES_PASSWORD="qwerty" -p 5432:5432 -d --rm postgres
 --rm postgrs - will delete container when it is stopped
-
 brew install golang-migrate
+migrate create -ext sql -dir ./schema -seq init
+migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' -verbose up
+migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' -verbose down
+migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' force 1
+docker exec -it 183a3e22ac4d /bin/bash
