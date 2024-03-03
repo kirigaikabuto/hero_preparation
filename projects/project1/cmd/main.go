@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -10,16 +9,18 @@ import (
 	"github.com/kirigaikabuto/hero_preparation/projects/project1/pkg/repository"
 	"github.com/kirigaikabuto/hero_preparation/projects/project1/pkg/service"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
 	if err := initConfig(); err != nil {
-		log.Fatalf("error install configuration file %s", err.Error())
+		logrus.Fatalf("error install configuration file %s", err.Error())
 		return
 	}
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error during reading from .env file %s", err.Error())
+		logrus.Fatalf("error during reading from .env file %s", err.Error())
 		return
 	}
 	db, err := repository.NewPostgres(repository.Config{
@@ -31,12 +32,12 @@ func main() {
 		SSLMode:  viper.GetString("db.ssl_mode"),
 	})
 	if err != nil {
-		log.Fatalf("error during connection to postgres %s", err.Error())
+		logrus.Fatalf("error during connection to postgres %s", err.Error())
 		return
 	}
 	err = db.Ping()
 	if err != nil {
-		log.Fatalf("error during ping of postgres %s", err.Error())
+		logrus.Fatalf("error during ping of postgres %s", err.Error())
 		return
 	}
 	repo := repository.NewRepository(db)
@@ -44,7 +45,7 @@ func main() {
 	handlers := handler.NewHandler(services)
 	srv := new(project1.Server)
 	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		log.Fatalf("error running of server %s", err.Error())
+		logrus.Fatalf("error running of server %s", err.Error())
 		return
 	}
 }
