@@ -1,8 +1,12 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/kirigaikabuto/hero_preparation/projects/project1/models"
+)
 
 type Authorization interface {
+	CreateUser(user models.User) (int, error)
 }
 
 type Catalog interface {
@@ -18,5 +22,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		Authorization: NewAuthPostgres(db),
+	}
 }

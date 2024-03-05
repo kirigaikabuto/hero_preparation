@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/joho/godotenv"
 	"github.com/kirigaikabuto/hero_preparation/projects/project1"
@@ -44,9 +47,21 @@ func main() {
 	services := service.NewService(repo)
 	handlers := handler.NewHandler(services)
 	srv := new(project1.Server)
-	if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("error running of server %s", err.Error())
-		return
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handlers.InitRoutes()); err != nil {
+			logrus.Fatalf("error running of server %s", err.Error())
+		}
+	}()
+	logrus.Printf("Server started on port %s", viper.GetString("port"))
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+	logrus.Print("Server is shutting down")
+	err := srv.Shutdown(context.Background()); err != nil {
+		logrus.Errorf("Error occured when server is shutting down %s", err.Error())
+	}
+	if err := db.Close(); err != nil {
+		logrus.Errorf("Error occured when database is shutting down %s", err.Error())
 	}
 }
 
