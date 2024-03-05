@@ -7,3 +7,4 @@ migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/post
 migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' -verbose down
 migrate -path ./schema -database 'postgres://postgres:qwerty@localhost:5432/postgres?sslmode=disable' force 1
 docker exec -it 183a3e22ac4d /bin/bash
+https://github.com/swaggo/swag
